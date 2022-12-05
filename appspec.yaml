@@ -3,7 +3,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "arn:aws:ecs:us-east-1:958175408450:task-definition/tweet-app-td:5"
+        TaskDefinition: "arn:aws:ecs:us-east-1:958175408450:task-definition/tweet-app-td:7"
         LoadBalancerInfo:
           ContainerName: "tweet-app-container"
           ContainerPort: "80"
