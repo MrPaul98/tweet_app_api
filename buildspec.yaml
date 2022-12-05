@@ -1,0 +1,30 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+  pre_build:
+    commands:
+    - echo Logging in to Amazon ECR...
+    - aws --version
+    - aws --region us-east-1 ecr get-login-password  | docker login --username AWS --password-stdin 958175408450.dkr.ecr.us-east-1.amazonaws.com/tweet-app
+    - TAG="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
+    - IMAGE_URI=958175408450.dkr.ecr.us-east-1.amazonaws.com/tweet-app:latest
+  build:
+    commands:
+    - echo Build started on `date`
+    - echo $IMAGE_URI
+    - mvn clean package -Ddockerfile.skip
+    - docker build --tag $IMAGE_URI .
+  post_build:
+    commands:
+    - printenv
+    - echo Build completed on `date`
+    - echo $(docker images)
+    - echo Pushing docker image
+    - docker push $IMAGE_URI
+    - echo push completed
+    - printf '[{"name":"%s","imageUri":"%s"}]' tweet-app-container $IMAGE_URI > imagedefinitions.json
+artifacts:
+  files:
+  - imagedefinitions.json
